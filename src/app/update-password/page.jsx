@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import React from 'react';
 
 import UpdatePassword from 'src/components/Auth/UpdatePassword';
 

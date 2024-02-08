@@ -11,11 +11,15 @@
     "lint:fix": "eslint --ignore-path .gitignore --fix ."
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.39.3",
     "classnames": "^2.5.1",
     "encoding": "^0.1.13",
     "formik": "^2.4.5",
+    "framer-motion": "^11.0.3",
     "next": "^14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
