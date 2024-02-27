@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import Link from 'next/link';
+import { Link } from '@chakra-ui/next-js';
 import * as Yup from 'yup';
 
 const SignInSchema = Yup.object().shape({
@@ -28,6 +28,7 @@ const SignIn = () => {
   }
 
   return (
+    <div className='flex items-center justify-center w-full h-[100vh]'>
     <div className="card">
       <h2 className="w-full text-center">Sign In</h2>
       <Formik
@@ -45,11 +46,11 @@ const SignIn = () => {
               className={cn('input', errors.email && touched.email && 'bg-red-50')}
               id="email"
               name="email"
-              placeholder="jane@acme.com"
+              placeholder="barry@example.com"
               type="email"
             />
             {errors.email && touched.email ? (
-              <div className="text-red-600">{errors.email}</div>
+              <div className="text-red-600">{String(errors.email)}</div>
             ) : null}
 
             <label htmlFor="email">Password</label>
@@ -60,7 +61,7 @@ const SignIn = () => {
               type="password"
             />
             {errors.password && touched.password ? (
-              <div className="text-red-600">{errors.password}</div>
+              <div className="text-red-600">{String(errors.password)}</div>
             ) : null}
 
             <Link href="/reset-password" className="link w-full">
@@ -77,6 +78,7 @@ const SignIn = () => {
       <Link href="/sign-up" className="link w-full">
         Don&apos;t have an account? Sign Up.
       </Link>
+    </div>
     </div>
   );
 };

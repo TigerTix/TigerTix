@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
@@ -49,7 +49,7 @@ const UpdatePassword = () => {
               type="password"
             />
             {errors.password && touched.password ? (
-              <div className="text-red-600">{errors.password}</div>
+              <div className="text-red-600">{String(errors.password)}</div>
             ) : null}
             <button className="button-inverse w-full" type="submit">
               Update Password

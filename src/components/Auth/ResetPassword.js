@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import Link from 'next/link';
+import { Link } from '@chakra-ui/next-js';
 import * as Yup from 'yup';
 
 const ResetPasswordSchema = Yup.object().shape({
@@ -49,7 +49,7 @@ const ResetPassword = () => {
               type="email"
             />
             {errors.email && touched.email ? (
-              <div className="text-red-600">{errors.email}</div>
+              <div className="text-red-600">{String(errors.email)}</div>
             ) : null}
             <button className="button-inverse w-full" type="submit">
               Send Instructions

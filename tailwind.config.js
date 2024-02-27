@@ -1,3 +1,4 @@
+// @ts-nocheck
 /** @type {import('tailwindcss').Config} */
 const forms = require('@tailwindcss/forms');
 
