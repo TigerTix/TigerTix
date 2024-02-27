@@ -28,8 +28,9 @@ const SignIn = () => {
   }
 
   return (
-    <div className='flex items-center justify-center w-full h-[100vh]'>
-      <div className="card">
+    <div className='flex column items-center justify-center w-full h-[100vh]' style={{backgroundColor:"#d3d4d5"}}>
+      <h1 className="text-4xl font-bold text-center" style={{marginBottom:"40px"}}>Tiger Tix Logo</h1>
+      <div className="card" style={{backgroundColor:"#ebede9"}}>
         <h2 className="w-full text-center">Sign In</h2>
         <Formik
           initialValues={{
