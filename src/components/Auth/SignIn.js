@@ -29,56 +29,56 @@ const SignIn = () => {
 
   return (
     <div className='flex items-center justify-center w-full h-[100vh]'>
-    <div className="card">
-      <h2 className="w-full text-center">Sign In</h2>
-      <Formik
-        initialValues={{
-          email: '',
-          password: '',
-        }}
-        validationSchema={SignInSchema}
-        onSubmit={signIn}
-      >
-        {({ errors, touched }) => (
-          <Form className="column w-full">
-            <label htmlFor="email">Email</label>
-            <Field
-              className={cn('input', errors.email && touched.email && 'bg-red-50')}
-              id="email"
-              name="email"
-              placeholder="barry@example.com"
-              type="email"
-            />
-            {errors.email && touched.email ? (
-              <div className="text-red-600">{String(errors.email)}</div>
-            ) : null}
+      <div className="card">
+        <h2 className="w-full text-center">Sign In</h2>
+        <Formik
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          validationSchema={SignInSchema}
+          onSubmit={signIn}
+        >
+          {({ errors, touched }) => (
+            <Form className="column w-full">
+              <label htmlFor="email">Email</label>
+              <Field
+                className={cn('input', errors.email && touched.email && 'bg-red-50')}
+                id="email"
+                name="email"
+                placeholder="tiger@tix.com"
+                type="email"
+              />
+              {errors.email && touched.email ? (
+                <div className="text-red-600">{String(errors.email)}</div>
+              ) : null}
 
-            <label htmlFor="email">Password</label>
-            <Field
-              className={cn('input', errors.password && touched.password && 'bg-red-50')}
-              id="password"
-              name="password"
-              type="password"
-            />
-            {errors.password && touched.password ? (
-              <div className="text-red-600">{String(errors.password)}</div>
-            ) : null}
+              <label htmlFor="email">Password</label>
+              <Field
+                className={cn('input', errors.password && touched.password && 'bg-red-50')}
+                id="password"
+                name="password"
+                type="password"
+              />
+              {errors.password && touched.password ? (
+                <div className="text-red-600">{String(errors.password)}</div>
+              ) : null}
 
-            <Link href="/reset-password" className="link w-full">
-              Forgot your password?
-            </Link>
+              <Link href="/reset-password" className="link w-full">
+                Forgot your password?
+              </Link>
 
-            <button className="button-inverse w-full" type="submit">
-              Submit
-            </button>
-          </Form>
-        )}
-      </Formik>
-      {errorMsg && <div className="text-red-600">{errorMsg}</div>}
-      <Link href="/sign-up" className="link w-full">
-        Don&apos;t have an account? Sign Up.
-      </Link>
-    </div>
+              <button className="button-inverse w-full" type="submit">
+                Submit
+              </button>
+            </Form>
+          )}
+        </Formik>
+        {errorMsg && <div className="text-red-600">{errorMsg}</div>}
+        <Link href="/sign-up" className="link w-full">
+          Don&apos;t have an account? Sign Up.
+        </Link>
+      </div>
     </div>
   );
 };
