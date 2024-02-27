@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import { Link } from '@chakra-ui/next-js';
+import { Link } from '@chakra-ui/react';
 import * as Yup from 'yup';
 
 const SignUpSchema = Yup.object().shape({

@@ -4,8 +4,8 @@ import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import { Link } from '@chakra-ui/next-js';
 import * as Yup from 'yup';
+import { Link } from '@chakra-ui/react';
 
 const ResetPasswordSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
