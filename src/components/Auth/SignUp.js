@@ -7,7 +7,32 @@ import { Field, Form, Formik } from 'formik';
 import { Link, HStack, Flex, Box } from '@chakra-ui/react';
 import * as Yup from 'yup';
 
+async function checkUsernameUniqueness(username) {
+  const supabase = createClientComponentClient();
+  const { data, error } = await supabase.from('profiles').select('id').eq('username', username).limit(1);
+
+  if (error) {
+    console.error('Error checking username uniqueness:', error);
+    // Handle error appropriately in your app
+    return false;
+  }
+
+  // If the data array is empty, the username is unique
+  return data.length === 0;
+}
+
 const SignUpSchema = Yup.object().shape({
+  username: Yup.string().required('Required')
+  .required('Required')
+  .min(3, 'Username must be at least 3 characters')
+  .max(30, 'Username must be less than 30 characters')
+  .matches(/^[a-zA-Z0-9_]*$/, 'Username can only contain alphanumeric characters and underscores')
+  .test('isUnique', 'Username already taken', async (value) => {
+    // Check if the username is unique in your database
+    // This is a placeholder, replace with your actual uniqueness check
+    const isUnique = await checkUsernameUniqueness(value);
+    return isUnique;
+  }),
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
@@ -29,6 +54,7 @@ const SignUp = () => {
 
       options: {
         data: {
+          username: formData.username,
           first_name: formData.first_name,
           last_name: formData.last_name,
           CUID: formData.CUID.toUpperCase(),
@@ -45,8 +71,8 @@ const SignUp = () => {
   }
 
   return (
-    <div className='flex column items-center justify-center w-full h-[100vh]' style={{ backgroundColor: "#d3d4d5" }}>
-      <Flex width={"100%"} height={"100%"} justifyContent={"center"} align={"center"}>
+    <div className='flex column items-center justify-center w-full' style={{ backgroundColor: "#d3d4d5" }}>
+      <Flex width={"100%"} height={"100%"} justifyContent={"center"} align={"center"} marginY={"20px"}>
         <Box bgColor={"#ebede9"} minW={{ md: "25rem" }} width={{ md: "60%", sm: "70%", base: "88%" }} minH={{ sm: "75%", base: "60%" }} maxH={"95%"} display={"flex"} flexDir="column" justifyContent={"center"} alignItems={"center"} borderRadius={{ sm: "2xl", base: "2xl" }}>
           <Flex flexDir={"column"} marginY={{ base: "40px" }} width={"85%"}>
             <h2 className="w-full text-center" style={{ fontSize: "2rem" }}>Create Account</h2>
@@ -54,6 +80,7 @@ const SignUp = () => {
               initialValues={{
                 email: '',
                 password: '',
+                username: '',
                 first_name: '',
                 last_name: '',
                 CUID: '',
@@ -63,9 +90,21 @@ const SignUp = () => {
             >
               {({ errors, touched }) => (
                 <Form className="column w-full">
+
+                  <label htmlFor="username">Username</label>
+                  <Field
+                    className={cn('input', errors.username && touched.username && 'bg-red-50')}
+                    id="username"
+                    name="username"
+                    type="text"
+                  />
+                  {errors.username && touched.username ? (
+                    <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>{String(errors.username)}</div>
+                  ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
+
                   <label htmlFor="email">Email</label>
                   <Field
-                    className={cn('input', errors.email && 'bg-red-50')}
+                    className={cn('input', errors.email && touched.email &&'bg-red-50')}
                     id="email"
                     name="email"
                     placeholder="jane@acme.com"
