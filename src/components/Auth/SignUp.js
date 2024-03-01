@@ -12,7 +12,9 @@ const SignUpSchema = Yup.object().shape({
   password: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
   last_name: Yup.string().required('Required'),
-  CUID: Yup.string(),
+  CUID: Yup.string().test('startsWithC', 'CUID must start with a C or be blank', value => {
+    return !value || value.startsWith('C') || value.startsWith('c');
+  }),
 });
 
 const SignUp = () => {
@@ -29,7 +31,7 @@ const SignUp = () => {
         data: {
           first_name: formData.first_name,
           last_name: formData.last_name,
-          CUID: formData.CUID,
+          CUID: formData.CUID.toUpperCase(),
         },
       },
       // redirectTo: `${window.location.origin}/auth/callback`,
@@ -46,12 +48,15 @@ const SignUp = () => {
     <div className='flex column items-center justify-center w-full h-[100vh]' style={{ backgroundColor: "#d3d4d5" }}>
       <Flex width={"100%"} height={"100%"} justifyContent={"center"} align={"center"}>
         <Box bgColor={"#ebede9"} minW={{ md: "25rem" }} width={{ md: "60%", sm: "70%", base: "88%" }} minH={{ sm: "75%", base: "60%" }} maxH={"95%"} display={"flex"} flexDir="column" justifyContent={"center"} alignItems={"center"} borderRadius={{ sm: "2xl", base: "2xl" }}>
-          <Flex flexDir={"column"} marginY={{ base: "40px" }} width={"85%"}> 
-            <h2 className="w-full text-center" style={{fontSize:"2rem"}}>Create Account</h2>
+          <Flex flexDir={"column"} marginY={{ base: "40px" }} width={"85%"}>
+            <h2 className="w-full text-center" style={{ fontSize: "2rem" }}>Create Account</h2>
             <Formik
               initialValues={{
                 email: '',
                 password: '',
+                first_name: '',
+                last_name: '',
+                CUID: '',
               }}
               validationSchema={SignUpSchema}
               onSubmit={signUp}
@@ -113,7 +118,10 @@ const SignUp = () => {
                     name="CUID"
                     type="text"
                   />
-                  <button className="button-inverse w-full" type="submit" style={{ marginTop: "25px" }}>
+                  {errors.CUID && touched.CUID ? (
+                    <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>{String(errors.CUID)}</div>
+                  ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
+                  <button className="button-inverse w-full" type="submit" >
                     Submit
                   </button>
                 </Form>
@@ -121,7 +129,7 @@ const SignUp = () => {
             </Formik>
             {errorMsg && <div className="text-red-600">{errorMsg}</div>}
             {successMsg && <div className="text-black">{successMsg}</div>}
-            <Link href="/sign-in" className="link w-full" style={{fontSize:"0.9rem", marginTop:"5px"}}>
+            <Link href="/sign-in" className="link w-full" style={{ fontSize: "0.9rem", marginTop: "5px", marginBottom:"10px" }}>
               Already have an account? Sign In.
             </Link>
           </Flex>
