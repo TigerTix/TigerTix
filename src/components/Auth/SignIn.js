@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import { Link, HStack, Box, Flex, Image, Hide } from '@chakra-ui/react';
+import { Link, HStack, Box, Flex, Image, Hide, Show } from '@chakra-ui/react';
 import * as Yup from 'yup';
 
 const SignInSchema = Yup.object().shape({
@@ -29,14 +29,15 @@ const SignIn = () => {
 
   return (
     <div className='flex column items-center justify-center w-full h-[100vh]' style={{ backgroundColor: "var(--chakra-colors-gray-300)" }}>
-      <HStack spacing={"0"} width={"100%"} justify={{md:"space-between", sm:"center"}} height={"100%"}>
-        <Hide below='md'>
+      <HStack spacing={"0"} width={"100%"} justify={{md:"space-between", sm:"center", base:"center"}} height={"100%"}>
+        <Show breakpoint='(min-width: 48em)'> 
+        {/* 768px */}
           <Flex width="100%" height="100%" >
             <Image pos={"relative"} height={"100%"} maxWidth="100%" width="fit" src='change-this.jpg'></Image>
           </Flex>
-        </Hide>
-        <Box  minW={"25rem"} width={"40%"} h={{md:"100%"}} minH={{sm:"75%"}} bgColor={{md:"var(--chakra-colors-gray-200)", sm:"#ebede9"}} display={"flex"} justifyContent={"center"} alignItems={"center"} borderRadius={{sm:"2xl"}}>
-          <Flex flexDir={"column"} >
+        </Show>
+        <Box minW={{md:"22rem"}} width={{md:"40%", sm:"70%", base:"88%"}} h={{md:"100%"}} minH={{sm:"75%", base:"60%"}} bgColor={{md:"var(--chakra-colors-gray-200)", sm:"#ebede9", base:"#ebede9"}} display={"flex"} justifyContent={"center"} alignItems={"center"} borderRadius={{sm:"2xl", base:"2xl"}}>
+          <Flex flexDir={"column"} marginY={{base:"40px"}} >
             <h2 className="w-full text-center" style={{ color: "var(--chakra-colors-black)" }}>Welcome Back!</h2>
             <Formik
               initialValues={{
@@ -71,7 +72,7 @@ const SignIn = () => {
                     <div className="text-red-600">{String(errors.password)}</div>
                   ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
 
-                  <Link href="/reset-password" className="link w-full">
+                  <Link href="/reset-password" className="link w-full"mb={"10px"} >
                     Forgot your password?
                   </Link>
 
@@ -82,7 +83,7 @@ const SignIn = () => {
               )}
             </Formik>
             {errorMsg && <div className="text-red-600">{errorMsg}</div>}
-            <Link href="/sign-up" className="link w-full">
+            <Link href="/sign-up" className="link w-full" my={"20px"}>
               Don&apos;t have an account? Sign Up.
             </Link>
           </Flex>
