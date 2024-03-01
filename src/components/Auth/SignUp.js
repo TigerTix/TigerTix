@@ -4,12 +4,15 @@ import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import { Link } from '@chakra-ui/react';
+import { Link, HStack, Flex, Box } from '@chakra-ui/react';
 import * as Yup from 'yup';
 
 const SignUpSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().required('Required'),
+  first_name: Yup.string().required('Required'),
+  last_name: Yup.string().required('Required'),
+  CUID: Yup.string(),
 });
 
 const SignUp = () => {
@@ -33,8 +36,7 @@ const SignUp = () => {
 
   return (
     <div className='flex column items-center justify-center w-full h-[100vh]' style={{ backgroundColor: "#d3d4d5" }}>
-      <h1 className="text-4xl font-bold text-center" style={{ marginBottom: "40px" }}>Tiger Tix Logo</h1>
-      <div className="card" style={{backgroundColor:"#ebede9"}}>
+      <div className="card" style={{ backgroundColor: "#ebede9", width: "50%"}}>
         <h2 className="w-full text-center">Create Account</h2>
         <Formik
           initialValues={{
@@ -55,8 +57,8 @@ const SignUp = () => {
                 type="email"
               />
               {errors.email && touched.email ? (
-                <div className="text-red-600">{String(errors.email)}</div>
-              ) : null}
+                <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>{String(errors.email)}</div>
+              ) : <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>&nbsp;</div>}
 
               <label htmlFor="email">Password</label>
               <Field
@@ -66,10 +68,42 @@ const SignUp = () => {
                 type="password"
               />
               {errors.password && touched.password ? (
-                <div className="text-red-600">{String(errors.password)}</div>
-              ) : null}
-
-              <button className="button-inverse w-full" type="submit">
+                <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>{String(errors.password)}</div>
+              ) : <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>&nbsp;</div>}
+              <HStack width={"100%"} justify={"space-between"}>
+                <Flex flexDir={"column"} width={"47%"} >
+                  <label htmlFor="first_name">First Name</label>
+                  <Field
+                    className={cn('input', errors.first_name && touched.first_name && 'bg-red-50')}
+                    id="first_name"
+                    name="first_name"
+                    type="text"
+                  />
+                  {errors.first_name && touched.first_name ? (
+                    <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>{String(errors.first_name)}</div>
+                  ) : <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>&nbsp;</div>}
+                </Flex>
+                <Flex flexDir={"column"} width="47%" >
+                <label htmlFor="last_name">Last Name</label>
+                  <Field
+                    className={cn('input', errors.last_name && touched.last_name && 'bg-red-50')}
+                    id="last_name"
+                    name="last_name"
+                    type="text"
+                  />
+                  {errors.last_name && touched.last_name ? (
+                    <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>{String(errors.last_name)}</div>
+                  ) : <div className="text-red-600" style={{marginBottom: "0px", marginTop:"0px"}}>&nbsp;</div>}
+                </Flex>
+              </HStack>
+              <label htmlFor="CUID">CUID</label>
+              <Field
+                className={cn('input', errors.CUID && touched.CUID && 'bg-red-50')}
+                id="CUID"
+                name="CUID"
+                type="text"
+              />
+              <button className="button-inverse w-full" type="submit"  style={{marginTop:"25px"}}>
                 Submit
               </button>
             </Form>

@@ -16,15 +16,15 @@
   }
 
   .card {
-    @apply column min-w-[20rem] items-center gap-8 rounded-2xl bg-white py-8 px-4 shadow-md sm:min-w-[24rem] sm:px-10;
+    @apply column min-w-[30rem] items-center gap-8 rounded-2xl bg-white py-6 px-10 shadow-md sm:min-w-[30rem] sm:px-10 bg-gray-100;
   }
 
   .column {
-    @apply flex flex-col items-start justify-center gap-4;
+    @apply flex flex-col items-start justify-center gap-2;
   }
 
   .custom-focus {
-    @apply focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2;
+    @apply focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2;
   }
 
   .heading {
