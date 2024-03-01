@@ -27,6 +27,14 @@ const SignUp = () => {
       // redirectTo: `${window.location.origin}/auth/callback`,
     });
 
+    const { error: profileError } = await supabase.from('profiles').insert([
+      {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        CUID: formData.CUID,
+      },
+    ]);
+
     if (error) {
       setErrorMsg(error.message);
     } else {
