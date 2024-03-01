@@ -37,7 +37,7 @@ async function checkCUIDUniqueness(CUID) {
 
 async function checkEmailUniqueness(email) {
   const supabase = createClientComponentClient();
-  const { data, error } = await supabase.from('profiles').select('id').eq('email', email).limit(1);
+  const { data, error } = await supabase.from('users').select('id').eq('email', email).limit(1);
 
   if (error) {
     console.error('Error checking email uniqueness:', error);
