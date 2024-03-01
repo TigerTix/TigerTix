@@ -12,8 +12,8 @@ const SignUpSchema = Yup.object().shape({
   password: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
   last_name: Yup.string().required('Required'),
-  CUID: Yup.string().test('startsWithC', 'CUID must start with a C or be blank', value => {
-    return !value || value.startsWith('C') || value.startsWith('c');
+  CUID: Yup.string().test('startsWithC', 'CUID must start with a C and be 8 digits long', value => {
+    return !value || ((value.startsWith('C') || value.startsWith('c')) && value.length === 9);
   }),
 });
 
