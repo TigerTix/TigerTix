@@ -24,16 +24,16 @@ const SignUp = () => {
     const { error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
+
+      options: {
+        data: {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          CUID: formData.CUID,
+        },
+      },
       // redirectTo: `${window.location.origin}/auth/callback`,
     });
-
-    const { error: profileError } = await supabase.from('profiles').insert([
-      {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        CUID: formData.CUID,
-      },
-    ]);
 
     if (error) {
       setErrorMsg(error.message);
