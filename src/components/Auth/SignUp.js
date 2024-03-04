@@ -73,7 +73,7 @@ const SignUpSchema = Yup.object().shape({
   })
   .test('isUnique', 'CUID already taken', async (value) => {
     const isUnique = await checkCUIDUniqueness(value);
-    return isUnique;
+    return !value || isUnique;
   }),
 });
 
