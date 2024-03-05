@@ -23,7 +23,7 @@ async function checkUsernameUniqueness(username) {
 
 async function checkCUIDUniqueness(CUID) {
   const supabase = createClientComponentClient();
-  const { data, error } = await supabase.from('profiles').select('id').eq('CUID', CUID).limit(1);
+  const { data, error } = await supabase.from('profiles').select('id').eq('cuid', CUID).limit(1);
 
   if (error) {
     console.error('Error checking CUID uniqueness:', error);
@@ -32,20 +32,6 @@ async function checkCUIDUniqueness(CUID) {
   }
 
   // If the data array is empty, the CUID is unique
-  return data.length === 0;
-}
-
-async function checkEmailUniqueness(email) {
-  const supabase = createClientComponentClient();
-  const { data, error } = await supabase.from('users').select('id').eq('email', email).limit(1);
-
-  if (error) {
-    console.error('Error checking email uniqueness:', error);
-    // Handle error appropriately in your app
-    return false;
-  }
-
-  // If the data array is empty, the email is unique
   return data.length === 0;
 }
 
@@ -59,11 +45,7 @@ const SignUpSchema = Yup.object().shape({
     const isUnique = await checkUsernameUniqueness(value);
     return isUnique;
   }),
-  email: Yup.string().email('Invalid email').required('Required')
-  .test('isUnique', 'Email already taken', async (value) => {
-    const isUnique = await checkEmailUniqueness(value);
-    return isUnique;
-  }),
+  email: Yup.string().email('Invalid email').required('Required'),
   password: Yup.string().required('Required'),
   first_name: Yup.string().required('Required'),
   last_name: Yup.string().required('Required'),
