@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import cn from 'classnames';
 import { Field, Form, Formik } from 'formik';
-import { Link, HStack, Flex, Box } from '@chakra-ui/react';
+import { Link, HStack, Flex, Box, Text } from '@chakra-ui/react';
 import * as Yup from 'yup';
 
 async function checkUsernameUniqueness(username) {
@@ -107,8 +107,7 @@ const SignUp = () => {
             >
               {({ errors, touched }) => (
                 <Form className="column w-full">
-
-                  <label htmlFor="username">Username</label>
+                  <Flex><label htmlFor="username">Username&nbsp;</label> <Text color={"red"}>*</Text></Flex>
                   <Field
                     className={cn('input', errors.username && touched.username && 'bg-red-50')}
                     id="username"
@@ -119,7 +118,7 @@ const SignUp = () => {
                     <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>{String(errors.username)}</div>
                   ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
 
-                  <label htmlFor="email">Email</label>
+<Flex><label htmlFor="username">Email&nbsp;</label> <Text color={"red"}>*</Text></Flex>
                   <Field
                     className={cn('input', errors.email && touched.email &&'bg-red-50')}
                     id="email"
@@ -131,7 +130,7 @@ const SignUp = () => {
                     <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>{String(errors.email)}</div>
                   ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
 
-                  <label htmlFor="email">Password</label>
+<Flex><label htmlFor="username">Password&nbsp;</label> <Text color={"red"}>*</Text></Flex>
                   <Field
                     className={cn('input', errors.password && touched.password && 'bg-red-50')}
                     id="password"
@@ -143,8 +142,7 @@ const SignUp = () => {
                   ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
                   <HStack width={"100%"} justify={"space-between"}>
                     <Flex flexDir={"column"} width={"47%"} >
-                      <label htmlFor="first_name">First Name</label>
-                      <Field
+                    <Flex><label htmlFor="username">First Name&nbsp;</label> <Text color={"red"}>*</Text></Flex>                      <Field
                         className={cn('input', errors.first_name && touched.first_name && 'bg-red-50')}
                         id="first_name"
                         name="first_name"
@@ -155,8 +153,7 @@ const SignUp = () => {
                       ) : <div className="text-red-600" style={{ marginBottom: "0px", marginTop: "0px" }}>&nbsp;</div>}
                     </Flex>
                     <Flex flexDir={"column"} width="47%" >
-                      <label htmlFor="last_name">Last Name</label>
-                      <Field
+                    <Flex><label htmlFor="username">Last Name&nbsp;</label> <Text color={"red"}>*</Text></Flex>                      <Field
                         className={cn('input', errors.last_name && touched.last_name && 'bg-red-50')}
                         id="last_name"
                         name="last_name"
