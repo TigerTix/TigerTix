@@ -42,9 +42,12 @@ export default async function Profile() {
 
   async function handleDelete() {
     const response = await DeleteAccount();
-    console.log(response);
-    if (response) {
-      handleSignOut();
+    if (response.error) {
+      // eslint-disable-next-line no-console
+      console.error('ERROR:', response.error);
+      return;
+    }else{
+      router.push('/sign-in');
     }
   }
 
