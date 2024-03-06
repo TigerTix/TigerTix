@@ -41,8 +41,10 @@ export default async function Profile() {
   }
 
   async function handleDelete() {
-    const response = await DeleteAccount();
-    router.push('/sign-in');
+    const {} = await supabase.auth.signOut().then(async () => {
+      await DeleteAccount();
+    });
+    
   }
 
 
