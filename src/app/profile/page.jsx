@@ -39,7 +39,7 @@ export default async function Profile() {
       
         const temp = await DeleteAccount();
         router.refresh();
-        //await supabase.auth.refreshSession();
+        await supabase.auth.refreshSession();
 
         router.push('/sign-in');
         console.log('Account deleted');
