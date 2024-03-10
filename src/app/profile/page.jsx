@@ -28,45 +28,44 @@ export default async function Profile() {
     });
   }, []);
 
-  async function tempDeleteAccount() {
-    await DeleteAccount();
 
-    router.refresh();
-    await supabase.auth.refreshSession();
+  async function handleDelete() {
+    if (confirm('Are you sure you want to delete your account?')) {
+      // const { error } = await supabase.auth.signOut({ scope: 'global' });
 
-    router.push('/sign-in');
+      // if (error) {
+      //   console.error('ERROR:', error);
+      // }
+      
+        const temp = await DeleteAccount();
+        router.refresh();
+        //await supabase.auth.refreshSession();
+
+        router.push('/sign-in');
+        console.log('Account deleted');
+      
+
+    }
+
   }
 
-    async function handleDelete() {
-      if (confirm('Are you sure you want to delete your account?')) {
-        const { error } = await supabase.auth.signOut({ scope: 'global' });
 
-        if (error) {
-          console.error('ERROR:', error);
-        }
-
-        await tempDeleteAccount();
-      }
-
-    }
-
-
-    if (loading) {
-      return (
-        <Flex align="center" justify="center" h="100vh">
-          <Spinner size="xl" thickness='4px' color='primary.500' />
-        </Flex>
-      );
-    }
-
+  if (loading) {
     return (
-      <Box p={4}>
-        <Stack spacing={4}>
-          <Text fontSize="xl">Welcome, {user.email}</Text>
-          <SignOut />
-          {/* Delete account button */}
-          <Button onClick={handleDelete}>Delete Account</Button>
-        </Stack>
-      </Box>
+      <Flex align="center" justify="center" h="100vh">
+        <Spinner size="xl" thickness='4px' color='primary.500' />
+      </Flex>
     );
   }
+
+  return (
+    <Box p={4}>
+      <Stack spacing={4}>
+        <Text fontSize="xl">Welcome, {user.email}</Text>
+        <SignOut />
+        {/* Delete account button */}
+        <Button onClick={handleDelete}>Delete Account</Button>
+      </Stack>
+    </Box>
+  );
+}
