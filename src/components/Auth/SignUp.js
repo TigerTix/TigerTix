@@ -80,6 +80,7 @@ const SignUp = () => {
       // redirectTo: `${window.location.origin}/auth/callback`,
     });
 
+    // maybe make this a pop up and when they click ok, if it is successful, it will redirect them to the sign in page, if not it will just close the pop up
     if (error) {
       setErrorMsg(error.message);
     } else {

@@ -2,12 +2,10 @@
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import DeleteAccount from 'src/components/Auth/DeleteAccount';
+import SignOut from 'src/components/SignOut';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Text, Box, Button, Spinner, Flex, Stack } from '@chakra-ui/react';
-import SignOut from 'src/components/SignOut';
-
-
 
 
 export default async function Profile() {
@@ -18,6 +16,7 @@ export default async function Profile() {
 
   useEffect(() => {
     // ensure this is only run when the component mounts
+    router.refresh();
     supabase.auth.getUser().then((response) => {
       console.log(response.data.user)
       if (!response.data.user) {
@@ -29,41 +28,45 @@ export default async function Profile() {
     });
   }, []);
 
-  async function handleSignOut() {
-    const { error } = await supabase.auth.signOut();
+  async function tempDeleteAccount() {
+    await DeleteAccount();
 
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error('ERROR:', error);
-    } else {
-      router.push('/sign-in');
+    router.refresh();
+    await supabase.auth.refreshSession();
+
+    router.push('/sign-in');
+  }
+
+    async function handleDelete() {
+      if (confirm('Are you sure you want to delete your account?')) {
+        const { error } = await supabase.auth.signOut({ scope: 'global' });
+
+        if (error) {
+          console.error('ERROR:', error);
+        }
+
+        await tempDeleteAccount();
+      }
+
     }
-  }
-
-  async function handleDelete() {
-    const {} = await supabase.auth.signOut().then(async () => {
-      await DeleteAccount();
-    });
-    
-  }
 
 
-  if (loading) {
+    if (loading) {
+      return (
+        <Flex align="center" justify="center" h="100vh">
+          <Spinner size="xl" thickness='4px' color='primary.500' />
+        </Flex>
+      );
+    }
+
     return (
-      <Flex align="center" justify="center" h="100vh">
-        <Spinner size="xl" thickness='4px' color='primary.500' />
-      </Flex>
+      <Box p={4}>
+        <Stack spacing={4}>
+          <Text fontSize="xl">Welcome, {user.email}</Text>
+          <SignOut />
+          {/* Delete account button */}
+          <Button onClick={handleDelete}>Delete Account</Button>
+        </Stack>
+      </Box>
     );
   }
-
-  return (
-    <Box p={4}>
-      <Stack spacing={4}>
-        <Text fontSize="xl">Welcome, {user.email}</Text>
-        <Button onClick={handleSignOut}>Sign Out</Button>
-        {/* Delete account button */}
-        <Button onClick={handleDelete}>Delete Account</Button>
-      </Stack>
-    </Box>
-  );
-}
