@@ -9,8 +9,10 @@ import { Spinner, Flex, Button } from '@chakra-ui/react';
 export default async function Home() {
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
-  const [user, setUser] = useState(null);
+  const [authUser, setAuthUser] = useState(null);
+  const [user, setUser] = useState([{ role: 'loading' }]);
   const router = useRouter();
+
 
 
   useEffect(() => {
@@ -22,7 +24,12 @@ export default async function Home() {
         router.push('/sign-in');
         return;
       }
-      setUser(response.data.user);
+      setAuthUser(response.data.user);
+
+      supabase.from('profiles').select().eq('id', response.data.user.id).then((profileResponse) => {
+        setUser(profileResponse.data);
+      });
+
       setLoading(false);
     });
   }, []);
@@ -38,8 +45,15 @@ export default async function Home() {
   return (
     <div className="card">
       <h2>Welcome!</h2>
-      <code className="highlight">{user.role}</code>
-      <Flex flexDir={"column"} h={"100px"} justify={"space-between"} >
+      <code className="highlight">{user[0].role}</code>
+      <Flex flexDir={"column"} h={user[0].role === 'vendor' ? "150px" : "100px"} justify={"space-between"} >
+
+      {user[0].role === 'vendor' && (
+        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/event/dashboard")}}>
+          Go to Event Dashboard
+        </Button>
+      )}
+
         <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/profile")}}>
           Go to Profile
         </Button>
