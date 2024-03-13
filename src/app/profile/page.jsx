@@ -59,8 +59,16 @@ export default async function Profile() {
     if (error) {
       console.error('Error updating first name:', error);
     }
+  }
 
+  const handleLastameChange = async (value) => {
+    setLastName(value);
 
+    const { error } = await supabase.from('profiles').update({ last_name: value }).eq('id', user[0].id);
+
+    if (error) {
+      console.error('Error updating last name:', error);
+    }
   }
 
   async function handleDelete() {
@@ -83,7 +91,7 @@ export default async function Profile() {
 
   }
 
-  function EditableControls() {
+  function EditableControls({ editing }) {
     const {
       isEditing,
       getSubmitButtonProps,
@@ -98,7 +106,7 @@ export default async function Profile() {
       </ButtonGroup>
     ) : (
       <Flex justifyContent='center'>
-        <Text>Edit First Name &nbsp;</Text>
+        <Text>{editing} &nbsp;</Text>
         <IconButton size='sm' icon={<EditIcon />} aria-label="Edit" {...getEditButtonProps()} />
       </Flex>
     )
@@ -111,25 +119,61 @@ export default async function Profile() {
         <Spinner size="xl" thickness='4px' color='primary.500' />
       </Flex>
     );
-  } 22
+  }
 
   return (
     <Box p={4}>
       <Stack spacing={4}>
-        <Text fontSize="xl">Welcome, {firstName}!</Text>
-        <Flex>
-          <Editable
-            textAlign='center'
-            fontSize='2xl'
-            isPreviewFocusable={false}
-            onSubmit={handleFirstNameChange}
-            flexDir={'row'}
-            display={'flex'}
-          >
-            <EditablePreview />
-            <EditableInput />
-            <EditableControls />
-          </Editable>
+        <Text fontSize="xl">Welcome, {username}!</Text>
+
+        <Flex flexDir={"column"} alignItems={"center"}>
+          <Flex width={"100%"} justifyContent={"space-evenly"}>
+            <Flex flexDir={"column"}>
+              <Text fontSize="lg">First Name: {firstName}</Text>
+              <Editable
+                textAlign='center'
+                fontSize='2xl'
+                defaultValue={firstName}
+                isPreviewFocusable={false}
+                onSubmit={handleFirstNameChange}
+                flexDir={'row'}
+                display={'flex'}
+              >
+                <EditableInput />
+                <EditableControls editing={"Edit First Name"} />
+              </Editable>
+            </Flex>
+
+            <Flex flexDir={"column"}>
+              <Text fontSize="lg">Last Name: {lastName}</Text>
+              <Editable
+                textAlign='center'
+                fontSize='2xl'
+                defaultValue={lastName}
+                isPreviewFocusable={false}
+                onSubmit={handleLastameChange}
+                flexDir={'row'}
+                display={'flex'}
+              >
+                <EditableInput />
+                <EditableControls editing={"Edit Last Name"} />
+              </Editable>
+            </Flex>
+          </Flex>
+          <Flex flexDir={"column"}>
+            <Text fontSize={"lg"}> CUID: {cuid}</Text>
+            <Editable
+              textAlign='center'
+              fontSize='2xl'
+              defaultValue={cuid}
+              isPreviewFocusable={false}
+              flexDir={'row'}
+              display={'flex'}
+            >
+              <EditableInput />
+              <EditableControls editing={"Edit CUID"} />
+            </Editable>
+          </Flex>
         </Flex>
 
 
