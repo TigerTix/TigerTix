@@ -19,6 +19,8 @@ export default function EventDashboard() {
     const [description, setDescription] = useState('')
     const [time, setTime] = useState('') // datetime
     const [location, setLocation] = useState('')
+    const [numTickets, setNumTickets] = useState(0)
+    const [ticketPrice, setTicketPrice] = useState(0)
 
     const [editEventID, setEditEventID] = useState(null)
 
@@ -63,7 +65,7 @@ export default function EventDashboard() {
 
     const createEvent = () => {
         supabase.from('events').insert([
-            {title: name, description, time, location, created_by: user.id}
+            {title: name, description, time, location, num_tickets: numTickets, ticket_price: ticketPrice, created_by: user.id}
         ]).select().then((response) => {
             if(response.error) {
                 toast({
@@ -77,6 +79,22 @@ export default function EventDashboard() {
                 if(response.data){
                     console.log("updating events")
                     setEvents([...events, response.data[0]])
+                }
+                for(let i = 0; i < numTickets; i++) {
+                    supabase.from('tickets').insert([
+                        {event_id: response.data[0].id, price: ticketPrice, event_name: name}
+                    ]).select().then((response) => {
+                        if(response.error) {
+                            toast({
+                                title: "Error",
+                                description: response.error.message,
+                                status: "error",
+                                duration: 9000,
+                                isClosable: true,
+                            })
+                        }
+                    }
+                    )
                 }
                 toast({
                     title: "Success",
@@ -92,7 +110,7 @@ export default function EventDashboard() {
     }
 
     const editEvent = () => {
-        supabase.from('events').update({title: name, description, time, location}).eq('id', editEventID).then((response) => {
+        supabase.from('events').update({title: name, description, time, location, num_tickets: numTickets, ticket_price: ticketPrice}).eq('id', editEventID).select().then((response) => {
             if(response.error) {
                 toast({
                     title: "Error",
@@ -109,6 +127,79 @@ export default function EventDashboard() {
                     duration: 9000,
                     isClosable: true,
                 })
+                // if price of ticket has changed, update all tickets, and if the number of tickets has changed, add or remove tickets
+                supabase.from('tickets').select().eq('event_id', editEventID).then((response) => {
+                    if(response.error) {
+                        toast({
+                            title: "Error",
+                            description: response.error.message,
+                            status: "error",
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                    } else {
+                        if(response.data.length < numTickets) {
+                            for(let i = 0; i < numTickets - response.data.length; i++) {
+                                supabase.from('tickets').insert([
+                                    {event_id: editEventID, owner_id: null}
+                                ]).then((response) => {
+                                    if(response.error) {
+                                        toast({
+                                            title: "Error",
+                                            description: response.error.message,
+                                            status: "error",
+                                            duration: 9000,
+                                            isClosable: true,
+                                        })
+                                    } else {
+                                        supabase.from('tickets').update({price: ticketPrice, event_name: name}).eq('event_id', editEventID).then((response) => {
+                                            if(response.error) {
+                                                toast({
+                                                    title: "Error",
+                                                    description: response.error.message,
+                                                    status: "error",
+                                                    duration: 9000,
+                                                    isClosable: true,
+                                                })
+                                            }
+                                        })
+                                    }
+                                }
+                                )
+                            }
+                        } else if(response.data.length > numTickets) {
+                            for(let i = 0; i < response.data.length - numTickets; i++) {
+                                supabase.from('tickets').delete().eq('id', response.data[i].id).then((response) => {
+                                    if(response.error) {
+                                        toast({
+                                            title: "Error",
+                                            description: response.error.message,
+                                            status: "error",
+                                            duration: 9000,
+                                            isClosable: true,
+                                        })
+                                    } else {
+                                        supabase.from('tickets').update({price: ticketPrice}).eq('event_id', editEventID).then((response) => {
+                                            if(response.error) {
+                                                toast({
+                                                    title: "Error",
+                                                    description: response.error.message,
+                                                    status: "error",
+                                                    duration: 9000,
+                                                    isClosable: true,
+                                                })
+                                            }
+                                        })
+                                    }
+                                }
+                                )
+                            }
+                        }
+                    }
+                })
+
+                
+
                 onEditEventModalClose()
                 setEvents(events.map((event) => {
                     if(event.id === editEventID) {
@@ -143,7 +234,7 @@ export default function EventDashboard() {
             <SimpleGrid columns={2} spacing="2rem" w="80%">
                 {/* Render the events in card format */}
                 {events && events.map((event) => (
-                    <Stack key={event.id} gap={2} h="15rem" bg="gray.100" borderRadius="10px" align="center" p="1rem">
+                    <Stack key={event.id} gap={2} h="19rem" bg="gray.100" borderRadius="10px" align="center" p="1rem">
                         <Flex w="100%" justify="space-between">
                             <Flex cursor="pointer" onClick={() => {
                                 onEditEventModalOpen()
@@ -151,6 +242,8 @@ export default function EventDashboard() {
                                 setDescription(event.description)
                                 setTime(event.time)
                                 setLocation(event.location)
+                                setNumTickets(event.num_tickets)
+                                setTicketPrice(event.ticket_price)
                                 setEditEventID(event.id)
                             
                             }}>
@@ -185,6 +278,8 @@ export default function EventDashboard() {
                         <Text fontSize="1.2rem" color="gray.800">{event.description || "No Description"}</Text>
                         <Text fontSize="1rem" color="gray.700">Location: {event.location || "No Location"}</Text>
                         <Text fontSize="1rem" color="gray.700">Time: {new Date(event.time).toLocaleString()}</Text>
+                        <Text fontSize="1rem" color="gray.700">Tickets: {event.num_tickets || "NULL"}</Text>
+                        <Text fontSize="1rem" color="gray.700">Price: {event.ticket_price || "NULL"}</Text>
                     </Stack>
                 ))}
             </SimpleGrid>
@@ -197,11 +292,13 @@ export default function EventDashboard() {
                 <ModalCloseButton />
                 <ModalBody>
                     <Text fontWeight="semibold" fontSize="1.5rem">Create Event</Text>
-                    <Stack spacing={4} p={4}>
+                    <Stack spacing={4} p={4}> 
                         <Input placeholder="Event Name" value={name} onChange={(e) => setName(e.target.value)} />
                         <Input placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                         <Input placeholder="Event Time" value={time} type="datetime-local" onChange={(e) => setTime(e.target.value)} />
                         <Input placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                        <Input placeholder="Number of Tickets" value={numTickets} onChange={(e) => setNumTickets(Number(e.target.value))} />
+                        <Input placeholder="Ticket Price" value={ticketPrice} onChange={(e) => setTicketPrice(Number(e.target.value))} />
                         <Button colorScheme="primary" onClick={createEvent}>Create Event</Button>
                     </Stack>
                 </ModalBody>
@@ -219,6 +316,8 @@ export default function EventDashboard() {
                         <Input placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                         <Input placeholder="Event Time" value={time} type="datetime-local" onChange={(e) => setTime(e.target.value)} />
                         <Input placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                        <Input placeholder="Number of Tickets" value={numTickets} onChange={(e) => setNumTickets(Number(e.target.value))} />
+                        <Input placeholder="Ticket Price" value={ticketPrice} onChange={(e) => setTicketPrice(Number(e.target.value))} />
                         <Button colorScheme="primary" onClick={editEvent}>Edit Event</Button>
                     </Stack>
                 </ModalBody>
