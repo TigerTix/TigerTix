@@ -49,7 +49,7 @@ export default async function Home() {
       <Flex flexDir={"column"} h={user[0].role === 'vendor' ? "150px" : "100px"} justify={"space-between"} >
 
       {user[0].role === 'vendor' && (
-        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/event/dashboard")}}>
+        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/events/dashboard")}}>
           Go to Event Dashboard
         </Button>
       )}
