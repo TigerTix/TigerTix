@@ -46,7 +46,7 @@ export default async function Home() {
     <div className="card">
       <h2>Welcome!</h2>
       <code className="highlight">{user[0].role}</code>
-      <Flex flexDir={"column"} h={user[0].role === 'vendor' ? "150px" : "100px"} justify={"space-between"} >
+      <Flex flexDir={"column"} h={user[0].role === 'vendor' ? "200px" : "150px"} justify={"space-between"} >
 
       {user[0].role === 'vendor' && (
         <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/events/dashboard")}}>
@@ -54,7 +54,11 @@ export default async function Home() {
         </Button>
       )}
 
-        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/profile")}}>
+        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => { router.push("/tickets") }}>
+          Go to Your Tickets
+        </Button>
+
+        <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => { router.push("/profile") }}>
           Go to Profile
         </Button>
         <SignOut />
