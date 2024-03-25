@@ -54,9 +54,14 @@ export default async function Home() {
         </Button>
       )}
 
+      <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/ticket-marketplace")}}>
+          Go to Ticket Marketplace
+        </Button>
+
         <Button color={"white"} width={"100%"} bgColor={"primary.400"} _hover={{bgColor:"primary.500"}} borderRadius={"25px"} onClick={() => {router.push("/profile")}}>
           Go to Profile
         </Button>
+
         <SignOut />
       </Flex>
     </div>
