@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import SignOut from 'src/components/SignOut';
 import { Spinner, Flex, Button } from '@chakra-ui/react';
 
-export default async function Home() {
+export default function Home() {
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
   const [authUser, setAuthUser] = useState(null);
