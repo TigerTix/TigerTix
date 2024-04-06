@@ -3,7 +3,7 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, {useEffect, useState} from "react"
 import {Flex, Text, Spinner, useToast, Stack, SimpleGrid, Button, Input,
-    Modal, ModalOverlay, ModalCloseButton, ModalContent, ModalBody, useDisclosure} from "@chakra-ui/react"
+    Modal, ModalOverlay, ModalCloseButton, ModalContent, ModalBody, useDisclosure, filter} from "@chakra-ui/react"
 import { useRouter } from 'next/navigation';
 import { FaPlus, FaEdit, FaTrash} from "react-icons/fa";
 
@@ -31,6 +31,9 @@ export default function EventDashboard() {
     const {isOpen: isCreateEventModalOpen, onOpen: onCreateEventModalOpen, onClose: onCreateEventModalClose} = useDisclosure()
     const {isOpen: isEditEventModalOpen, onOpen: onEditEventModalOpen, onClose: onEditEventModalClose} = useDisclosure()
 
+    const [eventSearch, setEventSearch] = useState('')
+    const [filteredEvents, setFilteredEvents] = useState([])
+
     useEffect(() => {
         supabase.auth.getUser().then((response) => {
             if (!response.data.user) {
@@ -43,6 +46,7 @@ export default function EventDashboard() {
                     setProfile(profileResponse.data[0]);
                     supabase.from('events').select().eq('created_by', response.data.user.id).then((response) => {
                         setEvents(response.data);
+                        setFilteredEvents(response.data);
                         setLoading(false);
                     })
                 } else {
@@ -62,6 +66,14 @@ export default function EventDashboard() {
         })
 
     }, [])
+
+    useEffect(() => {
+        if(events) {
+            setFilteredEvents(events.filter((event) => {
+                return event.title.toLowerCase().includes(eventSearch.toLowerCase())
+            }))
+        }
+    }, [eventSearch]);
 
     const createEvent = () => {
         supabase.from('events').insert([
@@ -227,13 +239,13 @@ export default function EventDashboard() {
         <Flex direction="column" align="center" p={4}>
             <Text fontSize="4rem" fontWeight="bold" mb={4}>Event Dashboard</Text>
             <Stack direction="row" spacing={4} mb={4}>
-            <Input placeholder="Search events" />
+            <Input placeholder="Search events" value={eventSearch} onChange={(e) => setEventSearch(e.target.value)} />
             <Button leftIcon={<FaPlus/>} colorScheme="primary" px="2rem" onClick={onCreateEventModalOpen}>Create Event</Button>
                 
             </Stack>
             <SimpleGrid columns={2} spacing="2rem" w="80%">
                 {/* Render the events in card format */}
-                {events && events.map((event) => (
+                {filteredEvents && filteredEvents.map((event) => (
                     <Stack key={event.id} gap={2} h="19rem" bg="gray.100" borderRadius="10px" align="center" p="1rem">
                         <Flex w="100%" justify="space-between">
                             <Flex cursor="pointer" onClick={() => {
