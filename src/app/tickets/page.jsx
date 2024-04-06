@@ -12,8 +12,11 @@ export default function TicketView() {
   const supabase = createClientComponentClient();
   const [user, setUser] = useState(null);
   const [tickets, setTickets] = useState(null);
+  const [ticket, setTicket] = useState(null);
   const [events, setEvents] = useState(null);
+  const [event, setEvent] = useState(null);
   const [otherEmail, setOtherEmail] = useState('');
+  const [newPrice, setNewPrice] = useState('');
 
 
   const router = useRouter();
@@ -22,6 +25,7 @@ export default function TicketView() {
 
   const { isOpen: isTransferModalOpen, onOpen: onTransferModalOpen, onClose: onTransferModalClose } = useDisclosure()
   const { isOpen: isSellModalOpen, onOpen: onSellModalOpen, onClose: onSellModalClose } = useDisclosure()
+  const { isOpen: isRemoveModalOpen, onOpen: onRemoveModalOpen, onClose: onRemoveModalClose } = useDisclosure()
 
 
   useEffect(() => {
@@ -67,10 +71,16 @@ export default function TicketView() {
 
   const handleTransfer = async () => {
 
-    // checks to see if the ticket date is in the future
-
-
-
+    if (!ticket) {
+      toast({
+        title: "Error",
+        description: "Please select a ticket",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
     if (!otherEmail || !validEmail(otherEmail)) {
       toast({
@@ -86,6 +96,17 @@ export default function TicketView() {
       toast({
         title: "Error",
         description: "You cannot transfer a ticket to yourself",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if(ticket.owner_id !== user.id){
+      toast({
+        title: "Error",
+        description: "You do not own this ticket",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -110,29 +131,21 @@ export default function TicketView() {
       return;
     }
 
-    const { data: ticketData, error: ticketError } = await supabase.from('tickets').select().eq('owner_id', user.id).limit(1);
-    if (ticketError) {
-      console.error('Error checking ticket:', ticketError);
+
+    const { error: transferError } = await supabase.from('tickets').update({ owner_id: data[0].id }).eq('id', ticket.id);
+    
+    const { error: resaleError } = await supabase.from('tickets').update({ resale: false }).eq('id', ticket.id);
+    
+    if (transferError || resaleError) {
+      console.error('Error transferring ticket:', transferError);
       // Handle error appropriately in your app
-      return false;
-    }
-    if (ticketData.length === 0) {
       toast({
         title: "Error",
-        description: "No tickets to transfer",
+        description: "Error transferring ticket. Contact support.",
         status: "error",
         duration: 3000,
         isClosable: true,
-
       });
-      return;
-    }
-
-    const ticket = ticketData[0];
-    const { error: transferError } = await supabase.from('tickets').update({ owner_id: data[0].id }).eq('id', ticket.id);
-    if (transferError) {
-      console.error('Error transferring ticket:', transferError);
-      // Handle error appropriately in your app
       return false;
     }
 
@@ -153,6 +166,165 @@ export default function TicketView() {
     refreshTickets();
 
 
+
+  }
+
+  const handleSell = async () => {
+
+    if(!newPrice || isNaN(parseFloat(newPrice))){
+      toast({
+        title: "Error",
+        description: "Please enter a valid price",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // sets newprice to be a number
+    var tempPrice = parseFloat(newPrice);
+
+    if(tempPrice <= 0){
+      toast({
+        title: "Error",
+        description: "Please enter a valid price",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if(ticket.owner_id !== user.id){
+      toast({
+        title: "Error",
+        description: "You do not own this ticket",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    
+
+    const { error: transferError } = await supabase.from('tickets').update({ resale: true }).eq('id', ticket.id);
+    if (transferError) {
+      console.error('Error selling ticket:', transferError);
+      // Handle error appropriately in your app
+      toast({
+        title: "Error",
+        description: "Error selling ticket. Contact support.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+    if(ticket.resale){
+      toast({
+        title: "Error",
+        description: "Ticket already listed for sale",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+    const { error: priceError } = await supabase.from('tickets').update({ price: tempPrice }).eq('id', ticket.id);
+    if (priceError) {
+      console.error('Error selling ticket:', priceError);
+      // Handle error appropriately in your app
+      toast({
+        title: "Error",
+        description: "Error selling ticket. Contact support.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+
+    toast({
+      title: "Success",
+      description: "Ticket listed for sale",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    // refresh the page
+
+    onSellModalClose();
+    refreshTickets();
+  }
+
+  const handleRemove = async () => {
+
+    if(!ticket){
+      toast({
+        title: "Error",
+        description: "Please select a ticket",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if(!ticket.resale){
+      toast({
+        title: "Error",
+        description: "Ticket not listed for sale",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if(ticket.owner_id !== user.id){
+      toast({
+        title: "Error",
+        description: "You do not own this ticket",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const { error: transferError } = await supabase.from('tickets').update({ resale: false }).eq('id', ticket.id);
+
+
+    const { error: priceError } = await supabase.from('tickets').update({ price: event.ticket_price }).eq('id', ticket.id);
+
+    if (transferError || priceError) {
+      console.error('Error selling ticket:', transferError);
+      // Handle error appropriately in your app
+      toast({
+        title: "Error",
+        description: "Error removing ticket from marketplace. Contact support.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return false;
+    }
+
+    toast({
+      title: "Success",
+      description: "Ticket removed from marketplace",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+
+    onRemoveModalClose();
+    refreshTickets();
 
   }
 
@@ -183,7 +355,7 @@ export default function TicketView() {
           <SignOut />
         </Box>
       </Flex>
-      <SimpleGrid columns={2} spacing="1.5rem" w="85%" >
+      <SimpleGrid columns={2} spacing="1.5rem" w="85%" marginY={"15px"}>
         {tickets && tickets.map((ticket) => {
           if (!events) return null;
 
@@ -207,21 +379,32 @@ export default function TicketView() {
                 <Text fontSize="xl">Ticket Price: $ {ticket.price}</Text>
                 <Text fontSize="2xl" fontWeight="bold" color={status === "Passed" ? "red.500" : "green.500"}>{status}</Text>
 
+                {ticket.resale ? (
+                  <Text fontSize="xl" color={"red.500"}>Ticket listed for sale</Text>
+                ) : null}
+
                 {status === "Upcoming" ? (
                   <Box width={"100%"} justifyContent={"space-evenly"} display={"flex"}>
-                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={onTransferModalOpen}>
+                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => {onTransferModalOpen(); setTicket(ticket); }}>
                       Transfer Ticket
                     </Button>
-                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} >
+                    {ticket.resale ? (
+                      <Button color={"white"} width={"30%"} bgColor={"red.400"} _hover={{ bgColor: "red.500" }} borderRadius={"25px"} onClick={() => { onRemoveModalOpen(); setTicket(ticket); setEvent(event); }}>
+                        Remove from Sale
+                      </Button>
+                    ) : 
+                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => {onSellModalOpen(); setTicket(ticket); }} >
                       Sell Ticket
                     </Button>
+        }
                   </Box>
                 ) : null}
 
+            
 
               </Box>
               <Modal isOpen={isTransferModalOpen} onClose={onTransferModalClose} >
-                <ModalOverlay />
+                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
 
                 <ModalContent>
                   <ModalHeader fontWeight="semibold" fontSize="1.5rem">Transfer Ticket</ModalHeader>
@@ -238,7 +421,41 @@ export default function TicketView() {
 
               </Modal>
 
+              <Modal isOpen={isSellModalOpen} onClose={onSellModalClose} >
+                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
 
+                <ModalContent>
+                  <ModalHeader fontWeight="semibold" fontSize="1.5rem">Sell Ticket</ModalHeader>
+                  <ModalCloseButton onClick={onSellModalClose} />
+                  <ModalBody>
+                    <Stack spacing={4} p={4}>
+                      <Input placeholder="Price" onChange={(e) => setNewPrice(e.target.value)} />
+                    </Stack>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color={"white"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={handleSell}>Sell</Button>
+                  </ModalFooter>
+                </ModalContent>
+
+              </Modal>
+
+              <Modal isOpen={isRemoveModalOpen} onClose={onRemoveModalClose} >
+                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
+
+                <ModalContent>
+                  <ModalHeader fontWeight="semibold" fontSize="1.5rem">Remove from Sale</ModalHeader>
+                  <ModalCloseButton onClick={onRemoveModalClose} />
+                  <ModalBody>
+                    <Stack spacing={4} p={4}>
+                      <Text>Are you sure you want to remove this ticket from sale?</Text>
+                    </Stack>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color={"white"} bgColor={"red.400"} _hover={{ bgColor: "red.500" }} borderRadius={"25px"} onClick={handleRemove}>Remove</Button>
+                  </ModalFooter>
+                </ModalContent>
+
+              </Modal>
 
             </>
           );
