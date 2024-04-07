@@ -9,12 +9,14 @@ import { FaLocationDot, FaClock } from "react-icons/fa6";
 export default function PurchaseTicketPage({params}) {
     const [loading, setLoading] = React.useState(true);
     const [event, setEvent] = React.useState(null);
+    const [user, setUser] = React.useState(null);
     const [totalTickets, setTotalTickets] = React.useState([]);
     const toast = useToast();
     const supabase = createClientComponentClient();
     const router = useRouter();
 
     const [ticketQuantity, setTicketQuantity] = useState(1);
+    const [ticketsRemaining, setTicketsRemaining] = useState(0);
 
     useEffect(() => {
         supabase.auth.getUser().then((response) => {
@@ -28,6 +30,7 @@ export default function PurchaseTicketPage({params}) {
                 router.push("/sign-in");
                 return;
             }
+            setUser(response.data.user);
 
             supabase.from("events").select().eq("id", params.event_id).then((response) => {
                 if(response.data.length === 0) {
@@ -44,6 +47,7 @@ export default function PurchaseTicketPage({params}) {
 
                 supabase.from("tickets").select().eq("event_id", params.event_id).then((response) => {
                     setTotalTickets(response.data);
+                    setTicketsRemaining(response.data.filter((ticket) => ticket.owner_id === null).length);
                 });
 
                 setLoading(false);
@@ -51,10 +55,38 @@ export default function PurchaseTicketPage({params}) {
         });
     }, []);
 
-    let ticketsOwned = totalTickets.filter((ticket) => ticket.owner_id !== null).length;
 
-    let ticketsRemaining = totalTickets.length - ticketsOwned;
+    const handleTicketPurchase = () => {
+        if(ticketQuantity < 1) {
+            toast({
+                title: "Please enter a valid quantity",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            });
+            return;
+        }
 
+        // loop through the created tickets for the event, and find the tickets with no owner and assign them to the current user
+        supabase.from("tickets").select().eq("event_id", event.id).is("owner_id", null).then((response) => {
+            const tickets = response.data.slice(0, ticketQuantity);
+            tickets.forEach((ticket) => {
+                supabase.from("tickets").update({owner_id: user.id}).eq("id", ticket.id).then((response) => {
+                    console.log(response);
+                });
+            });
+            toast({
+                title: "Tickets purchased successfully",
+                status: "success",
+                duration: 9000,
+                isClosable: true,
+            });
+            setTicketsRemaining(ticketsRemaining - ticketQuantity);
+
+            
+        });
+
+    }
 
     if(loading) {
         return (
@@ -94,8 +126,8 @@ export default function PurchaseTicketPage({params}) {
             <Stack >
                 <Text fontSize="2rem" fontWeight="semibold">Purchase tickets</Text>
                 <Input type="number" value={ticketQuantity} onChange={(e) => setTicketQuantity(Number(e.target.value))} />
-                <Button onClick={() => {router.push(`/checkout/${event.id}/${ticketQuantity}`)}} colorScheme="primary">Buy Tickets</Button>
-                <Box position='relative' padding='8'>
+                <Button onClick={handleTicketPurchase} colorScheme="primary">Buy Tickets</Button>
+                <Box position='relative' padding='10'>
                     <Divider />
                     <AbsoluteCenter bg='white' px='2'>
                         or
