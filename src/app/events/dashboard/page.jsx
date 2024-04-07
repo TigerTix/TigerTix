@@ -39,7 +39,7 @@ export default function EventDashboard() {
             }
 
             supabase.from('profiles').select().eq('id', response.data.user.id).then((profileResponse) => {
-                if(profileResponse.data[0] && profileResponse.data[0].role === 'vendor') {
+                if(profileResponse.data[0] && (profileResponse.data[0].role === 'vendor' || profileResponse.data[0].role === 'support')) {
                     setProfile(profileResponse.data[0]);
                     supabase.from('events').select().eq('created_by', response.data.user.id).then((response) => {
                         setEvents(response.data);
