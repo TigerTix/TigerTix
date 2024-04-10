@@ -1,10 +1,13 @@
 "use client";
 
 import React, {useEffect} from "react";
-import {Flex, Spinner, useToast, Text, Stack, SimpleGrid, Button} from "@chakra-ui/react";
+import {Flex, Spinner, useToast, Text, Stack, SimpleGrid, Button, Input} from "@chakra-ui/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { FaLocationDot, FaClock } from "react-icons/fa6";
+import {Formik, Form, Field} from "formik";
+import FilterCost from 'src/services/costFilter';
+
 
 export default function TicketMarketplacePage() {
     const [loading, setLoading] = React.useState(true);
@@ -12,6 +15,11 @@ export default function TicketMarketplacePage() {
     const toast = useToast();
     const supabase = createClientComponentClient();
     const router = useRouter();
+
+
+    const [inputFilterNum, setFilterNum] = React.useState('')
+    const [filteredEvents, setFilteredEvents] = React.useState([]);
+
 
     useEffect(() => {
         supabase.auth.getUser().then((response) => {
@@ -27,15 +35,23 @@ export default function TicketMarketplacePage() {
             }
 
             supabase.from("events").select().then((response) => {
-                const filteredEvents = response.data.filter((event) => {
+                const futureEvents = response.data.filter((event) => {
                     return event.time > new Date().toISOString();
                 }
                 );
-                setEvents(filteredEvents);
+                setEvents(futureEvents);
+                setFilteredEvents(futureEvents);
                 setLoading(false);
             });
         });
     }, []);
+
+    useEffect(() => {
+            const filteredEvents = events.filter((event) => {
+                return event.ticket_price <= inputFilterNum;
+            })
+            setFilteredEvents(filteredEvents);
+    }, [inputFilterNum]);
 
     if(loading) {
         return (
@@ -50,10 +66,13 @@ export default function TicketMarketplacePage() {
             <Flex>
                 <Button onClick={() => {router.push("/main")}}>Home</Button>
             </Flex>
+            <Input value={inputFilterNum} onChange={(e) => setFilterNum(e.target.value)}></Input>
+            <Flex>
+            </Flex>
             <Stack spacing={4} w="100%">
             <Text fontSize="2rem" fontWeight="bold">Ticket Marketplace</Text>
             <SimpleGrid  w="100%" columns={3} spacing={8} p={8}>
-            {events.map((event) => (
+            {filteredEvents.map((event) => (
                 <Stack bg="gray.100" borderRadius="10px" p="1rem" align="center">
                     <Text fontSize="1.7rem" fontWeight="semibold">{event.title}</Text>
                     <Text fontSize="1.3rem">{event.description}</Text>
