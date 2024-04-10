@@ -9,26 +9,43 @@ import * as Yup from 'yup';
 
 const LandingPage = () => {
     return (
-        <div style={{ background: "url(background.jpg) no-repeat fixed center", backgroundSize: "100vw 100vh",  width: "100vw", height: "100vh", overflow: 'hidden'} }>
-            <h1 style={{ fontSize: "2.5rem", textAlign: "center", margin: "2rem 0" }}>
-                Welcome to Tiger Tix
-            </h1>
-            <p style={{ fontSize: "1.2rem", textAlign: "center", margin: "1rem 0" }}>
-            Your ultimate destination for hassle-free ticket booking!
-            </p>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-            <Link href="/sign-up" marginX={"5px"}>
-                <Button bgColor={"primary.400"}>
-                Get Started
-                </Button>
-            </Link>
-            <Link href="/sign-in" marginX={"5px"}>
-                <Button colorScheme='blue'>
-                Login
-                </Button>
-            </Link>
-            </div>
-      </div>
+        <Box
+    bgImage="url(background.jpg)"
+    bgSize="cover"
+    bgPosition="center"
+    w="100vw"
+    h="100vh"
+    overflow="hidden"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+  >
+    <Box
+      bg="rgba(190, 180, 210, 0.95)" // Adjust opacity and color as needed
+      p="4"
+      borderRadius="md"
+      textAlign="center"
+      mt="-45vh" // Move up by 20% of viewport height
+      ml="-40vw" // Move left by 20% of viewport width
+    >
+      <h1 style={{ fontSize: "2.5rem", fontWeight: 800, margin: "0.5rem 0", color: "white"}}>
+        Welcome to Tiger Tix
+      </h1>
+      <p style={{ fontSize: "1.2rem", fontWeight:"bold", margin: "0.5rem 0 1.5rem 0", color: "white" }}>
+        Go Get 'Em, Tigers
+      </p>
+      <Box display="flex" justifyContent="center">
+        <Link href="/sign-up" marginX={"5px"}>
+          <Button bgColor={"primary.400"} mr="3" color={"white"}>
+            Get Started
+          </Button>
+        </Link>
+        <Link href="/sign-in" marginX={"5px"}>
+          <Button colorScheme="purple">Login</Button>
+        </Link>
+      </Box>
+    </Box>
+  </Box>
     );
 };
 export default LandingPage;
