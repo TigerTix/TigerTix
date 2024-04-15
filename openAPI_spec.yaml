@@ -8,24 +8,6 @@ servers:
     - url: https://api.tigertix.com/v1
 
 paths:
-    # /users:
-    #     post:
-    #         summary: Create a new user account
-    #         operationId: createUser
-    #         tags:
-    #             - User Account Service
-    #         requestBody:
-    #             required: true
-    #             content:
-    #                 application/json:
-    #                     schema:
-    #                         $ref: "#/components/schemas/User/createAccount" 
-    #         responses:
-    #             "201":
-    #                 description: User created successfully
-    #             "400":
-    #                 description: Invalid user data
-
     /users/{userId}:
         get:
             summary: Get user account details
@@ -124,7 +106,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/User"
+                            $ref: "#/components/schemas/SignUp"
 
             responses:
                 "201":
