@@ -4,7 +4,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SignOut from 'src/components/SignOut';
-import { Spinner, Flex, Button, Text, Box, SimpleGrid, useToast, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalCloseButton, ModalFooter, Stack, Input } from '@chakra-ui/react';
+import { Spinner, Flex, Button, Text, Box, SimpleGrid, useToast, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalCloseButton, ModalFooter, Stack, Input, Tooltip } from '@chakra-ui/react';
 import moment from 'moment';
 
 export default function TicketView() {
@@ -103,7 +103,7 @@ export default function TicketView() {
       return;
     }
 
-    if(ticket.owner_id !== user.id){
+    if (ticket.owner_id !== user.id) {
       toast({
         title: "Error",
         description: "You do not own this ticket",
@@ -133,9 +133,9 @@ export default function TicketView() {
 
 
     const { error: transferError } = await supabase.from('tickets').update({ owner_id: data[0].id }).eq('id', ticket.id);
-    
+
     const { error: resaleError } = await supabase.from('tickets').update({ resale: false }).eq('id', ticket.id);
-    
+
     if (transferError || resaleError) {
       console.error('Error transferring ticket:', transferError);
       // Handle error appropriately in your app
@@ -171,7 +171,7 @@ export default function TicketView() {
 
   const handleSell = async () => {
 
-    if(!newPrice || isNaN(parseFloat(newPrice))){
+    if (!newPrice || isNaN(parseFloat(newPrice))) {
       toast({
         title: "Error",
         description: "Please enter a valid price",
@@ -185,7 +185,7 @@ export default function TicketView() {
     // sets newprice to be a number
     var tempPrice = parseFloat(newPrice);
 
-    if(tempPrice <= 0){
+    if (tempPrice <= 0) {
       toast({
         title: "Error",
         description: "Please enter a valid price",
@@ -196,7 +196,7 @@ export default function TicketView() {
       return;
     }
 
-    if(ticket.owner_id !== user.id){
+    if (ticket.owner_id !== user.id) {
       toast({
         title: "Error",
         description: "You do not own this ticket",
@@ -206,7 +206,7 @@ export default function TicketView() {
       });
       return;
     }
-    
+
 
     const { error: transferError } = await supabase.from('tickets').update({ resale: true }).eq('id', ticket.id);
     if (transferError) {
@@ -222,7 +222,7 @@ export default function TicketView() {
       return false;
     }
 
-    if(ticket.resale){
+    if (ticket.resale) {
       toast({
         title: "Error",
         description: "Ticket already listed for sale",
@@ -264,7 +264,7 @@ export default function TicketView() {
 
   const handleRemove = async () => {
 
-    if(!ticket){
+    if (!ticket) {
       toast({
         title: "Error",
         description: "Please select a ticket",
@@ -275,7 +275,7 @@ export default function TicketView() {
       return;
     }
 
-    if(!ticket.resale){
+    if (!ticket.resale) {
       toast({
         title: "Error",
         description: "Ticket not listed for sale",
@@ -286,7 +286,7 @@ export default function TicketView() {
       return;
     }
 
-    if(ticket.owner_id !== user.id){
+    if (ticket.owner_id !== user.id) {
       toast({
         title: "Error",
         description: "You do not own this ticket",
@@ -328,6 +328,49 @@ export default function TicketView() {
 
   }
 
+  const handleCalendar = (event) => {
+
+
+    if (!event) {
+      toast({
+        title: "Error",
+        description: "Please select an event",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // Add to Google Calendar
+
+    
+    // making starte time to ISO string
+
+    let startTime = moment(event.time).toISOString().replace(/[-:.]/g, '');
+
+    //making end time 4 hours after start time
+    let endTime = moment(event.time).add(4, 'hours').toISOString().replace(/[-:.]/g, '');
+
+    // Create a new event
+    const tempEvent = {
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      start: startTime,
+      end: endTime,
+    };
+
+    
+    
+
+    window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${tempEvent.title}&details=${tempEvent.description}&location=${tempEvent.location}&dates=${tempEvent.start}/${tempEvent.end}&stz=America/New_York&etz=America/New_York`, '_blank');
+
+  }
+
+
+
+
   if (loading) {
     const intervalId = setInterval(() => {
       refreshTickets();
@@ -364,14 +407,25 @@ export default function TicketView() {
           const currentDate = moment();
           const eventDate = moment(event ? event.time : null);
 
-          const status = currentDate.isBefore(eventDate) ? 'Upcoming' : 'Passed';
+          let status = currentDate.isBefore(eventDate) ? 'Upcoming' : 'Passed';
+          
+          const happeningTime = moment(eventDate).add(4, 'hours');
+          if (status === 'Upcoming' && currentDate.isAfter(eventDate) && currentDate.isBefore(happeningTime)){
+            status = 'Happening Now';
+          }
 
           const fixedDate = eventDate.format('MMMM Do YYYY, h:mm:ss a');
 
-
           return (
             <>
-              <Box key={ticket.id} p={5} shadow="md" borderWidth="1px" borderRadius="10px" bgColor={"gray.100"}>
+              <Box key={ticket.id} p={5} shadow="md" borderWidth="1px" borderRadius="10px" bgColor={"gray.100"} position={"relative"}>
+                {status === "Upcoming" || status ===  "Happening Now" ? (
+                  <Tooltip label="Add to Google Calendar" aria-label="Add to Google Calendar">
+                    <Button color={"white"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} position={"absolute"} right={"5px"} top={"5px"} onClick={() => handleCalendar(event)}>
+                      +
+                    </Button>
+                  </Tooltip>
+                ) : null}
                 <Text fontSize="xl">Ticket for: <b>{event ? event.title : 'N/A'}</b></Text>
                 <Text fontSize="xl">Event Date: {event ? fixedDate : 'N/A'}</Text>
                 <Text fontSize="xl">Event Location: {event ? event.location : 'N/A'}</Text>
@@ -381,30 +435,31 @@ export default function TicketView() {
 
                 {ticket.resale ? (
                   <Text fontSize="xl" color={"red.500"}>Ticket listed for sale</Text>
-                ) : null}
+                ) : <Text fontSize={"xl"} >&nbsp;</Text>}
 
                 {status === "Upcoming" ? (
+                  
                   <Box width={"100%"} justifyContent={"space-evenly"} display={"flex"}>
-                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => {onTransferModalOpen(); setTicket(ticket); }}>
+                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => { onTransferModalOpen(); setTicket(ticket); }}>
                       Transfer Ticket
                     </Button>
                     {ticket.resale ? (
                       <Button color={"white"} width={"30%"} bgColor={"red.400"} _hover={{ bgColor: "red.500" }} borderRadius={"25px"} onClick={() => { onRemoveModalOpen(); setTicket(ticket); setEvent(event); }}>
                         Remove from Sale
                       </Button>
-                    ) : 
-                    <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => {onSellModalOpen(); setTicket(ticket); }} >
-                      Sell Ticket
-                    </Button>
-        }
+                    ) :
+                      <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => { onSellModalOpen(); setTicket(ticket); }} >
+                        Sell Ticket
+                      </Button>
+                    }
                   </Box>
                 ) : null}
 
-            
+
 
               </Box>
               <Modal isOpen={isTransferModalOpen} onClose={onTransferModalClose} >
-                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
+                <ModalOverlay style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} />
 
                 <ModalContent>
                   <ModalHeader fontWeight="semibold" fontSize="1.5rem">Transfer Ticket</ModalHeader>
@@ -422,7 +477,7 @@ export default function TicketView() {
               </Modal>
 
               <Modal isOpen={isSellModalOpen} onClose={onSellModalClose} >
-                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
+                <ModalOverlay style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} />
 
                 <ModalContent>
                   <ModalHeader fontWeight="semibold" fontSize="1.5rem">Sell Ticket</ModalHeader>
@@ -440,7 +495,7 @@ export default function TicketView() {
               </Modal>
 
               <Modal isOpen={isRemoveModalOpen} onClose={onRemoveModalClose} >
-                <ModalOverlay style={{backgroundColor: 'rgba(0,0,0,0.2)'}}/>
+                <ModalOverlay style={{ backgroundColor: 'rgba(0,0,0,0.2)' }} />
 
                 <ModalContent>
                   <ModalHeader fontWeight="semibold" fontSize="1.5rem">Remove from Sale</ModalHeader>
