@@ -3,7 +3,8 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React, {useEffect, useState} from "react"
 import {Flex, Text, Spinner, useToast, Stack, SimpleGrid, Button, Input,
-    Modal, ModalOverlay, ModalCloseButton, ModalContent, ModalBody, useDisclosure, filter} from "@chakra-ui/react"
+    Modal, ModalOverlay, ModalCloseButton, ModalContent, ModalBody, useDisclosure, filter,
+    Select} from "@chakra-ui/react"
 import { useRouter } from 'next/navigation';
 import { FaPlus, FaEdit, FaTrash} from "react-icons/fa";
 
@@ -19,6 +20,7 @@ export default function EventDashboard() {
     const [description, setDescription] = useState('')
     const [time, setTime] = useState('') // datetime
     const [location, setLocation] = useState('')
+    const [type, setType] = useState('')
     const [numTickets, setNumTickets] = useState(0)
     const [ticketPrice, setTicketPrice] = useState(0)
 
@@ -77,7 +79,7 @@ export default function EventDashboard() {
 
     const createEvent = () => {
         supabase.from('events').insert([
-            {title: name, description, time, location, num_tickets: numTickets, ticket_price: ticketPrice, created_by: user.id}
+            {title: name, description, time, location, num_tickets: numTickets, type: type, ticket_price: ticketPrice, created_by: user.id}
         ]).select().then((response) => {
             if(response.error) {
                 toast({
@@ -122,7 +124,7 @@ export default function EventDashboard() {
     }
 
     const editEvent = () => {
-        supabase.from('events').update({title: name, description, time, location, num_tickets: numTickets, ticket_price: ticketPrice}).eq('id', editEventID).select().then((response) => {
+        supabase.from('events').update({title: name, description, time, location, type: type, num_tickets: numTickets, ticket_price: ticketPrice}).eq('id', editEventID).select().then((response) => {
             if(response.error) {
                 toast({
                     title: "Error",
@@ -254,6 +256,7 @@ export default function EventDashboard() {
                                 setDescription(event.description)
                                 setTime(event.time)
                                 setLocation(event.location)
+                                setType(event.type)
                                 setNumTickets(event.num_tickets)
                                 setTicketPrice(event.ticket_price)
                                 setEditEventID(event.id)
@@ -290,6 +293,7 @@ export default function EventDashboard() {
                         <Text fontSize="1.2rem" color="gray.800">{event.description || "No Description"}</Text>
                         <Text fontSize="1rem" color="gray.700">Location: {event.location || "No Location"}</Text>
                         <Text fontSize="1rem" color="gray.700">Time: {new Date(event.time).toLocaleString()}</Text>
+                        <Text fontSize="1rem" color="gray.700">Type: {event.type || "No Type"}</Text>
                         <Text fontSize="1rem" color="gray.700">Tickets: {event.num_tickets || "NULL"}</Text>
                         <Text fontSize="1rem" color="gray.700">Price: {event.ticket_price || "NULL"}</Text>
                     </Stack>
@@ -309,6 +313,15 @@ export default function EventDashboard() {
                         <Input placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                         <Input placeholder="Event Time" value={time} type="datetime-local" onChange={(e) => setTime(e.target.value)} />
                         <Input placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                        <Select placeholder="All Events" w="20rem" value={type} onChange={(e) => setType(e.target.value)}>
+                            <option value="Concerts">Concerts</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Theater">Theater</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Festivals">Festivals</option>
+                            <option value="Exhibitions and Expos">Exhibitions and Expos</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                        </Select>
                         <Input placeholder="Number of Tickets" value={numTickets} onChange={(e) => setNumTickets(Number(e.target.value))} />
                         <Input placeholder="Ticket Price" value={ticketPrice} onChange={(e) => setTicketPrice(Number(e.target.value))} />
                         <Button colorScheme="primary" onClick={createEvent}>Create Event</Button>
@@ -328,6 +341,15 @@ export default function EventDashboard() {
                         <Input placeholder="Event Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                         <Input placeholder="Event Time" value={time} type="datetime-local" onChange={(e) => setTime(e.target.value)} />
                         <Input placeholder="Event Location" value={location} onChange={(e) => setLocation(e.target.value)} />
+                        <Select placeholder="All Events" w="20rem" value={type} onChange={(e) => setType(e.target.value)}>
+                            <option value="Concerts">Concerts</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Theater">Theater</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Festivals">Festivals</option>
+                            <option value="Exhibitions and Expos">Exhibitions and Expos</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                        </Select>
                         <Input placeholder="Number of Tickets" value={numTickets} onChange={(e) => setNumTickets(Number(e.target.value))} />
                         <Input placeholder="Ticket Price" value={ticketPrice} onChange={(e) => setTicketPrice(Number(e.target.value))} />
                         <Button colorScheme="primary" onClick={editEvent}>Edit Event</Button>

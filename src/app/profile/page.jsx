@@ -9,7 +9,7 @@ import { Text, Box, Button, Spinner, Flex, Stack, Editable, EditablePreview, use
 import { CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 
 
-export default async function Profile() {
+export default function Profile() {
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
   const [userAuth, setUserAuth] = useState(null);
