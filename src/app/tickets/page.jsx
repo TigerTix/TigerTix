@@ -422,7 +422,7 @@ export default function TicketView() {
               <Box key={ticket.id} p={5} shadow="md" borderWidth="1px" borderRadius="10px" bgColor={"gray.100"} position={"relative"}>
                 {status === "Upcoming" || status ===  "Happening Now" ? (
                   <Tooltip label="Add to Google Calendar" aria-label="Add to Google Calendar">
-                    <Button color={"white"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} position={"absolute"} right={"5px"} top={"5px"} onClick={() => handleCalendar(event)}>
+                    <Button color={"white"} bgColor={"rgb(82, 45, 128)"} _hover={{ bgColor: "rgb(102, 65, 148)" }} borderRadius={"25px"} position={"absolute"} right={"5px"} top={"5px"} onClick={() => handleCalendar(event)}>
                       <CalendarIcon />
                     </Button>
                   </Tooltip>
