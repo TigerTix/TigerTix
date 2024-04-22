@@ -411,9 +411,10 @@ export default function TicketView() {
           let status = currentDate.isBefore(eventDate) ? 'Upcoming' : 'Passed';
           
           const happeningTime = moment(eventDate).add(4, 'hours');
-          if (status === 'Upcoming' && currentDate.isAfter(eventDate) && currentDate.isBefore(happeningTime)){
+          if ((currentDate.isAfter(eventDate) && currentDate.isBefore(happeningTime))){
             status = 'Happening Now';
           }
+
 
           const fixedDate = eventDate.format('MMMM Do YYYY, h:mm:ss a');
 
