@@ -1,13 +1,10 @@
 "use client";
 
 import React, {useEffect} from "react";
-import {Flex, Spinner, useToast, Text, Stack, SimpleGrid, Button, Input} from "@chakra-ui/react";
+import {Flex, Spinner, useToast, Text, Stack, SimpleGrid, Button, Input, Select} from "@chakra-ui/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { FaLocationDot, FaClock } from "react-icons/fa6";
-import {Formik, Form, Field} from "formik";
-import FilterCost from 'src/services/costFilter';
-
 
 export default function TicketMarketplacePage() {
     const [loading, setLoading] = React.useState(true);
@@ -18,6 +15,7 @@ export default function TicketMarketplacePage() {
 
 
     const [inputFilterNum, setFilterNum] = React.useState('')
+    const [inputFilterType, setFilterType] = React.useState('')
     const [filteredEvents, setFilteredEvents] = React.useState([]);
 
 
@@ -47,11 +45,11 @@ export default function TicketMarketplacePage() {
     }, []);
 
     useEffect(() => {
-            const filteredEvents = events.filter((event) => {
-                return event.ticket_price <= inputFilterNum;
-            })
-            setFilteredEvents(filteredEvents);
-    }, [inputFilterNum]);
+        const filteredEvents = events.filter((event) => {
+            return event.ticket_price <= inputFilterNum && (inputFilterType === '' || event.type === inputFilterType);
+        })
+        setFilteredEvents(filteredEvents);
+    }, [inputFilterNum, inputFilterType]);
 
     if(loading) {
         return (
@@ -62,16 +60,33 @@ export default function TicketMarketplacePage() {
     }
 
     return (
-        <Flex direction="column" align="center" h="100vh">
+        <Flex direction="column" align="center" h="100vh" p="2rem">
             <Flex>
                 <Button onClick={() => {router.push("/main")}}>Home</Button>
             </Flex>
-            <Input value={inputFilterNum} onChange={(e) => setFilterNum(e.target.value)}></Input>
             <Flex>
             </Flex>
             <Stack spacing={4} w="100%">
             <Text fontSize="2rem" fontWeight="bold">Ticket Marketplace</Text>
-            <SimpleGrid  w="100%" columns={3} spacing={8} p={8}>
+            <Stack>
+                <Flex>
+                    <Text  w="12rem" fontSize="1.5rem" fontWeight="bold">Filter by price:</Text>
+                    <Input w="20rem" value={inputFilterNum} onChange={(e) => setFilterNum(e.target.value)}></Input>
+                </Flex>
+                <Flex>
+                    <Text w="12rem" fontSize="1.5rem" fontWeight="bold">Filter by type:</Text>
+                    <Select placeholder="All Events" w="20rem" value={inputFilterType} onChange={(e) => setFilterType(e.target.value)}>
+                        <option value="Concerts">Concerts</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Theater">Theater</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Festivals">Festivals</option>
+                        <option value="Exhibitions and Expos">Exhibitions and Expos</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                    </Select>
+                </Flex>
+            </Stack>
+            <SimpleGrid  w="100%" columns={3} spacing={8}>
             {filteredEvents.map((event) => (
                 <Stack bg="gray.100" borderRadius="10px" p="1rem" align="center">
                     <Text fontSize="1.7rem" fontWeight="semibold">{event.title}</Text>
