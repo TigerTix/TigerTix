@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import SignOut from 'src/components/SignOut';
 import { Spinner, Flex, Button, Text, Box, SimpleGrid, useToast, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalCloseButton, ModalFooter, Stack, Input, Tooltip } from '@chakra-ui/react';
+import {CalendarIcon} from '@chakra-ui/icons'
 import moment from 'moment';
 
 export default function TicketView() {
@@ -422,7 +423,7 @@ export default function TicketView() {
                 {status === "Upcoming" || status ===  "Happening Now" ? (
                   <Tooltip label="Add to Google Calendar" aria-label="Add to Google Calendar">
                     <Button color={"white"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} position={"absolute"} right={"5px"} top={"5px"} onClick={() => handleCalendar(event)}>
-                      +
+                      <CalendarIcon />
                     </Button>
                   </Tooltip>
                 ) : null}
@@ -430,6 +431,7 @@ export default function TicketView() {
                 <Text fontSize="xl">Event Date: {event ? fixedDate : 'N/A'}</Text>
                 <Text fontSize="xl">Event Location: {event ? event.location : 'N/A'}</Text>
                 <Text fontSize="xl">Event Description: {event ? event.description : 'N/A'}</Text>
+                <Text fontSize="xl">Event Type: {event ? event.type: 'N/A'}</Text>
                 <Text fontSize="xl">Ticket Price: $ {ticket.price}</Text>
                 <Text fontSize="2xl" fontWeight="bold" color={status === "Passed" ? "red.500" : "green.500"}>{status}</Text>
 

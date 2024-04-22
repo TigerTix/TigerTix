@@ -99,6 +99,7 @@ export default function TicketMarketplacePage() {
                 <Stack bg="gray.100" borderRadius="10px" p="1rem" align="center">
                     <Text fontSize="1.7rem" fontWeight="semibold">{event.title}</Text>
                     <Text fontSize="1.3rem">{event.description}</Text>
+                    <Text fontSize="1rem">Type: {event.type}</Text>
                     <Flex align="center">
                         <FaLocationDot />
                         <Text ml={2}>{event.location}</Text>
