@@ -45,6 +45,14 @@ export default function TicketMarketplacePage() {
     }, []);
 
     useEffect(() => {
+        if(inputFilterNum === '') {
+            const filteredEvents = events.filter((event) => {
+                return inputFilterType === '' || event.type === inputFilterType;
+            }
+            );
+            setFilteredEvents(filteredEvents);
+            return;
+        }
         const filteredEvents = events.filter((event) => {
             return event.ticket_price <= inputFilterNum && (inputFilterType === '' || event.type === inputFilterType);
         })
