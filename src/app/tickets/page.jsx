@@ -440,7 +440,7 @@ export default function TicketView() {
                   <Text fontSize="xl" color={"red.500"}>Ticket listed for sale</Text>
                 ) : <Text fontSize={"xl"} >&nbsp;</Text>}
 
-                {status === "Upcoming" ? (
+                {status === "Upcoming" || status === "Happening Now" ? (
                   
                   <Box width={"100%"} justifyContent={"space-evenly"} display={"flex"}>
                     <Button color={"white"} width={"30%"} bgColor={"primary.400"} _hover={{ bgColor: "primary.500" }} borderRadius={"25px"} onClick={() => { onTransferModalOpen(); setTicket(ticket); }}>
