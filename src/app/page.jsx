@@ -22,7 +22,7 @@ export default function Home() {
         <Flex w="60vw" justify="space-between" align="center" py="1rem" mt="1rem">
           <Text fontSize="1.5rem" fontWeight="bolder">TigerTix</Text>
           <Flex align="center" gap="1rem">
-            <Link as={NextLink} href="/main">Home</Link>
+            <Link as={NextLink} href="/" fontWeight="bold">Home</Link>
             <Link as={NextLink} href="/about">About</Link>
             <Link as={NextLink} href="/sign-in">Sign In</Link>
           </Flex>
