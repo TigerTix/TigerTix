@@ -12,10 +12,10 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <>
+    <Flex w="100vw" h="100vh" justify="center" overflow="hidden" position="relative">
     {/* create 2 triangels on the sides of screen */}
-     <Flex position="absolute" w="100rem" bg="purple.300" h="50rem" top="20rem" left="-56.5rem" transform="rotate(65deg)" zIndex="-1"/>
-     <Flex position="absolute" w="100rem" bg="purple.300" h="50rem" top="2rem" right="-63rem" transform="rotate(65deg)" zIndex="-1"/>
+     <Flex position="absolute" w="100rem" bg="purple.300" h="50rem" top="20rem" left="-56.5rem" transform="rotate(65deg)" zIndex="-1" overflow="hidden"/>
+     <Flex position="absolute" w="100rem" bg="purple.300" h="50rem" top="2rem" right="-63rem" transform="rotate(65deg)" zIndex="-1" overflow="hidden"/>
 
 
       <Stack align="center">
@@ -53,6 +53,6 @@ export default function Home() {
         </Flex>
 
       </Stack>
-    </>
+    </Flex>
   );
 }
